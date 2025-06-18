@@ -23,19 +23,19 @@ const localizer = dateFnsLocalizer({
 });
 
 export default function Calendar() {
-    const events = useSchedulerStore((s) => s.events);
-    const orders = useSchedulerStore((s) => s.orders);
-    const addEvent = useSchedulerStore((s) => s.addEvent);
-
     const [slotInfo, setSlotInfo] = useState<SlotInfo | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [currentView, setCurrentView] = useState<View>(Views.MONTH);
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
+    const [currentEvent, setCurrentEvent] = useState<AppEvent | null>(null);
 
+    const events = useSchedulerStore((s) => s.events);
+    const addEvent = useSchedulerStore((s) => s.addEvent);
+    const updateEvent = useSchedulerStore((s) => s.updateEvent);
 
     const mapped: RBCEvent[] = events.map((e) => ({
         id: e.id,
-        title: orders.find((o) => o.id === e.orderId)?.title || '',
+        title: e.title,
         start: e.start,
         end: e.end,
         resource: e,
@@ -48,12 +48,34 @@ export default function Calendar() {
 
     const handleSave = (
         orderId: string,
+        orderName: string,
+        orderCode: string,
         start: Date,
         end: Date,
         status: AppEvent['status']
     ) => {
-        addEvent(orderId, start, end, status);
+        if (currentEvent) {
+            updateEvent(currentEvent.id, orderId, orderName, orderCode, start, end, status);
+        } else {
+            addEvent(orderId, orderName, orderCode, start, end, status);
+        }
         setModalOpen(false);
+        setCurrentEvent(null)
+    };
+
+    const onSelectEvent = (ev: RBCEvent) => {
+        const appEv = ev.resource as AppEvent;
+        setCurrentEvent(appEv);
+        if (ev.start && ev.end) {
+            const slot: SlotInfo = {
+                start: ev.start,
+                end: ev.end,
+                slots: [ev.start],
+                action: 'select',
+            };
+            setSlotInfo(slot);
+        }
+        setModalOpen(true);
     };
 
     return (
@@ -64,7 +86,7 @@ export default function Calendar() {
                 events={mapped}
                 selectable
                 onSelectSlot={onSelectSlot}
-                onSelectEvent={(ev) => console.log('Edit event', ev)}
+                onSelectEvent={onSelectEvent}
                 style={{ height: 600}}
                 views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
                 view={currentView}
@@ -77,7 +99,8 @@ export default function Calendar() {
             {modalOpen && slotInfo && (
                 <EventModal
                     slotInfo={slotInfo}
-                    orders={orders}
+                    events={events}
+                    currentEvent={currentEvent}
                     onSave={handleSave}
                     onClose={() => setModalOpen(false)}
                 />

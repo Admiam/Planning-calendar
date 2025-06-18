@@ -2,30 +2,54 @@
 import { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import type { SlotInfo } from 'react-big-calendar';
-import type { Order } from '../store/useStore';
+import type { Event } from '../store/useStore';
+import { parse } from 'date-fns';
+import {formatHourOnly} from "../utils/date.ts";
 
 interface Props {
     slotInfo: SlotInfo;
-    orders: Order[];
+    events: Event[];
+    currentEvent: Event | null;
     onSave: (
         orderId: string,
+        oderName: string,
+        orderCode: string,
         start: Date,
         end: Date,
         status: 'new' | 'in-prep' | 'done'
     ) => void;
     onClose: () => void;
+    isEditing?: boolean;
 }
 
 export default function EventModal({
                                        slotInfo,
-                                       orders,
+                                       events,
+                                       currentEvent,
                                        onSave,
                                        onClose,
                                    }: Props) {
-    const [orderId, setOrderId] = useState<string>(orders[0]?.id || '');
+    console.log(events)
+    const [orderId, setOrderId] = useState<string>(currentEvent ? currentEvent?.id : '');
+    const [orderName, setOrderName] = useState<string>(currentEvent ? currentEvent?.title : '');
+    const [orderCode, setOrderCode] = useState<string>(currentEvent ? currentEvent?.code : '');
     const [start, setStart] = useState<Date>(slotInfo.start);
     const [end, setEnd] = useState<Date>(slotInfo.end);
     const [status, setStatus] = useState<'new' | 'in-prep' | 'done'>('new');
+
+
+
+    const handleStartChange = (value: string) => {
+        const parsed = parse(value, "yyyy-MM-dd'T'HH:mm", new Date());
+        parsed.setMinutes(0, 0, 0);
+        setStart(parsed);
+    };
+
+    const handleEndChange = (value: string) => {
+        const parsed = parse(value, "yyyy-MM-dd'T'HH:mm", new Date());
+        parsed.setMinutes(0, 0, 0);
+        setEnd(parsed);
+    };
 
     return (
         <Modal show onHide={onClose} centered>
@@ -36,25 +60,41 @@ export default function EventModal({
             <Modal.Body>
                 <Form>
                     <Form.Group className="mb-3" controlId="orderSelect">
+                        <Form.Label>Název zakázky</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={orderName}
+                            onChange={(e) => setOrderName(e.target.value)}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="orderSelect">
                         <Form.Label>Zakázka</Form.Label>
                         <Form.Select
                             value={orderId}
                             onChange={(e) => setOrderId(e.target.value)}
                         >
-                            {orders.map((o) => (
+                            {events.map((o) => (
                                 <option key={o.id} value={o.id}>
                                     {o.title}
                                 </option>
                             ))}
                         </Form.Select>
                     </Form.Group>
-
+                    <Form.Group className="mb-3" controlId="orderSelect">
+                        <Form.Label>Kód zakázky</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={orderCode}
+                            onChange={(e) => setOrderCode(e.target.value)}
+                        />
+                    </Form.Group>
                     <Form.Group className="mb-3" controlId="startDate">
                         <Form.Label>Začátek</Form.Label>
                         <Form.Control
                             type="datetime-local"
-                            value={start.toISOString().substring(0, 16)}
-                            onChange={(e) => setStart(new Date(e.target.value))}
+                            step={3600}
+                            value={formatHourOnly(start)}
+                            onChange={(e) => handleStartChange(e.target.value)}
                         />
                     </Form.Group>
 
@@ -62,8 +102,8 @@ export default function EventModal({
                         <Form.Label>Konec</Form.Label>
                         <Form.Control
                             type="datetime-local"
-                            value={end.toISOString().substring(0, 16)}
-                            onChange={(e) => setEnd(new Date(e.target.value))}
+                            value={formatHourOnly(end)}
+                            onChange={(e) => handleEndChange(e.target.value)}
                         />
                     </Form.Group>
 
@@ -87,7 +127,7 @@ export default function EventModal({
                 </Button>
                 <Button
                     variant="primary"
-                    onClick={() => onSave(orderId, start, end, status)}
+                    onClick={() => onSave(orderId, orderName, orderCode, start, end, status)}
                 >
                     Uložit
                 </Button>
