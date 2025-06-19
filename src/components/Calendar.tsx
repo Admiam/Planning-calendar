@@ -12,6 +12,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { cs } from 'date-fns/locale';
 import { useSchedulerStore, type Event as AppEvent } from '../store/useStore';
 import EventModal from './EventModal';
+import {FaTrash} from "react-icons/fa";
+import ConfirmationModal from "./ConfirmationModal.tsx";
 
 const locales = { cs };
 const localizer = dateFnsLocalizer({
@@ -28,10 +30,20 @@ export default function Calendar() {
     const [currentView, setCurrentView] = useState<View>(Views.MONTH);
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [currentEvent, setCurrentEvent] = useState<AppEvent | null>(null);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [toDelete, setToDelete] = useState<AppEvent | null>(null);
 
     const events = useSchedulerStore((s) => s.events);
     const addEvent = useSchedulerStore((s) => s.addEvent);
     const updateEvent = useSchedulerStore((s) => s.updateEvent);
+    const deleteEvent = useSchedulerStore((s) => s.deleteEvent);
+    const confirmDelete = () => {
+        if (toDelete) deleteEvent(toDelete.id);
+        setShowConfirm(false);
+        setToDelete(null);
+        setModalOpen(false);
+        setCurrentEvent(null)
+    };
 
     const mapped: RBCEvent[] = events.map((e) => ({
         id: e.id,
@@ -41,13 +53,33 @@ export default function Calendar() {
         resource: e,
     }));
 
+    const eventStyleGetter = (
+        event: RBCEvent,
+    ) => {
+        const status = (event.resource as AppEvent).status;
+        let backgroundColor: string;
+        switch (status) {
+            case 'new':     backgroundColor = '#f0ad4e'; break; // yellow
+            case 'in-prep': backgroundColor = '#0275d8'; break; // blue
+            case 'done':    backgroundColor = '#5cb85c'; break; // green
+            default:        backgroundColor = '#777';      break;
+        }
+        return {
+            style: {
+                backgroundColor,
+                borderColor: backgroundColor,
+                color: 'white'
+            }
+        };
+    };
+
     const onSelectSlot = (slot: SlotInfo) => {
         setSlotInfo(slot);
         setModalOpen(true);
     };
 
     const handleSave = (
-        orderId: string,
+        parentId: string,
         orderName: string,
         orderCode: string,
         start: Date,
@@ -55,9 +87,9 @@ export default function Calendar() {
         status: AppEvent['status']
     ) => {
         if (currentEvent) {
-            updateEvent(currentEvent.id, orderId, orderName, orderCode, start, end, status);
+            updateEvent(currentEvent.id, parentId, orderName, orderCode, start, end, status);
         } else {
-            addEvent(orderId, orderName, orderCode, start, end, status);
+            addEvent(parentId, orderName, orderCode, start, end, status);
         }
         setModalOpen(false);
         setCurrentEvent(null)
@@ -78,6 +110,33 @@ export default function Calendar() {
         setModalOpen(true);
     };
 
+    const CustomEvent = ({ event }: { event: RBCEvent }) => {
+        const appEv = event.resource as AppEvent;
+        return (
+            <div style={{ position: 'relative' }}>
+                <span>{event.title}</span>
+                <span
+                    className="rbc-delete-icon"
+                    onClick={() => {
+                        setToDelete(appEv)
+                        setShowConfirm(true)
+                    }}
+                >
+        <FaTrash className="text-danger"/>
+      </span>
+            </div>
+        );
+    };
+
+    const badgeName = (status: AppEvent['status']) => {
+        switch (status) {
+            case 'new':     return 'NOVÁ';
+            case 'in-prep': return 'V PŘÍPRAVĚ';
+            case 'done':    return 'HOTOVÁ';
+        }
+    };
+
+
     return (
         <div>
             <BigCalendar
@@ -95,16 +154,36 @@ export default function Calendar() {
                 onNavigate={(date: Date, _?: View, _action?: string) => {
                     setCurrentDate(date);
                 }}
+                eventPropGetter={eventStyleGetter}
+                components={{ event: CustomEvent }}
+
             />
             {modalOpen && slotInfo && (
-                <EventModal
-                    slotInfo={slotInfo}
-                    events={events}
-                    currentEvent={currentEvent}
-                    onSave={handleSave}
-                    onClose={() => setModalOpen(false)}
-                />
+                showConfirm && toDelete ? (
+                    <ConfirmationModal
+                        show={showConfirm}
+                        toDelete={toDelete}
+                        onHide={() => {
+                            setShowConfirm(false)
+                            setModalOpen(false);
+                            setCurrentEvent(null)
+                        }}
+                        onConfirm={confirmDelete}
+                        badgeName={badgeName}
+                    />
+                ) : (
+                    <EventModal
+                        slotInfo={slotInfo}
+                        events={events}
+                        currentEvent={currentEvent}
+                        onSave={handleSave}
+                        onClose={() => setModalOpen(false)}
+                    />
+                )
             )}
+
+
+
         </div>
     );
 }

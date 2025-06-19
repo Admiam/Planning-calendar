@@ -5,6 +5,7 @@ import Calendar from './components/Calendar'
 import EventModal from "./components/EventModal.tsx";
 import type {SlotInfo} from "react-big-calendar";
 import {floorDateToIncrement} from "./utils/date.ts";
+import EventCards from "./components/EventCards.tsx";
 
 function App() {
     const [modalOpen, setModalOpen] = useState(false);
@@ -27,43 +28,43 @@ function App() {
 
 
     const handleSave = (
-        orderId: string,
+        parentId: string,
         orderName: string,
         orderCode: string,
         start: Date,
         end: Date,
         status: AppEvent['status']
     ) => {
-        addEvent(orderId, orderName, orderCode, start, end, status);
+        addEvent(parentId, orderName, orderCode, start, end, status);
         setModalOpen(false);
     };
 
   return (
-      <div className="">
-          <nav className="navbar navbar-expand-lg bg-body-tertiary">
+      <div className="app-container d-flex flex-column vh-100">
+          <nav className="navbar navbar-expand-lg bg-body-tertiary flex-shrink-0">
               <div className="container-fluid d-flex justify-content-between">
-                  <form className=" justify-content-start">
-                      <button className="btn btn-outline-success me-2"
-                              type="button"
-                              onClick={() => {
-                                  setModalOpen(true)
-                                  setSlotInfo(createDefaultSlot());
-                              }}>
-                          Vložit zakázku
-                      </button>
-                  </form>
+                  <button className="btn btn-outline-success me-2"
+                          type="button"
+                          onClick={() => {
+                              setModalOpen(true)
+                              setSlotInfo(createDefaultSlot());
+                          }}>
+                      Vložit zakázku
+                  </button>
                   <form className="d-flex" role="search">
                       <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
                       <button className="btn btn-outline-success" type="submit">Search</button>
                   </form>
               </div>
           </nav>
-          <main className="flex-1 p-4">
-              <Calendar/>
+          <main className="main-content flex-fill d-flex overflow-hidden">
+              <div className="calendar-pane flex-grow-1 p-4">
+                  <Calendar/>
+              </div>
+              <div className="cards-pane w-25 border p-4 overflow-auto">
+                <EventCards></EventCards>
+              </div>
           </main>
-          <aside className="w-25 border p-4">
-
-          </aside>
           {modalOpen && slotInfo && (
               <EventModal
                   slotInfo={slotInfo}

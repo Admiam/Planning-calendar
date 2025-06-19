@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 
 export interface Event {
     id: string;
-    eventId: string;
+    parentId: string;
     title: string;
     code: string;
     start: Date;
@@ -14,7 +14,7 @@ export interface Event {
 interface SchedulerState {
     events: Event[];
     addEvent: (
-        eventId: string,
+        parentId: string,
         title: string,
         code : string,
         start: Date,
@@ -23,28 +23,34 @@ interface SchedulerState {
     ) => void;
     updateEvent: (
         id: string,
-        orderId: string,
+        parentId: string,
         title: string,
         code: string,
         start: Date,
         end: Date,
         status: Event['status']
     ) => void;
+    deleteEvent: (id: string) => void;
+
 }
 
 export const useSchedulerStore = create<SchedulerState>((set) => ({
     events: [],
-    addEvent: (eventId, title, code, start, end, status) =>
+    addEvent: (parentId, title, code, start, end, status) =>
         set((state) => ({
             events: [
                 ...state.events,
-                { id: uuid(), eventId, title, code, start, end, status },
+                { id: uuid(), parentId, title, code, start, end, status },
             ],
         })),
-    updateEvent: (id, orderId, title, code , start, end, status) =>
+    updateEvent: (id, parentId, title, code , start, end, status) =>
         set((s) => ({
             events: s.events.map((ev) =>
-                ev.id === id ? { ...ev, orderId, title, code, start, end, status } : ev
+                ev.id === id ? { ...ev, parentId: parentId, title, code, start, end, status } : ev
             ),
+        })),
+    deleteEvent: (id) =>
+        set((state) => ({
+            events: state.events.filter((ev) => ev.id !== id),
         })),
 }));

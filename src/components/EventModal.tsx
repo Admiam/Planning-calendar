@@ -29,13 +29,12 @@ export default function EventModal({
                                        onSave,
                                        onClose,
                                    }: Props) {
-    console.log(events)
-    const [orderId, setOrderId] = useState<string>(currentEvent ? currentEvent?.id : '');
+    const [parentId, setParentId] = useState<string>(currentEvent ? currentEvent?.parentId : 'none');
     const [orderName, setOrderName] = useState<string>(currentEvent ? currentEvent?.title : '');
     const [orderCode, setOrderCode] = useState<string>(currentEvent ? currentEvent?.code : '');
     const [start, setStart] = useState<Date>(slotInfo.start);
     const [end, setEnd] = useState<Date>(slotInfo.end);
-    const [status, setStatus] = useState<'new' | 'in-prep' | 'done'>('new');
+    const [status, setStatus] = useState<'new' | 'in-prep' | 'done'>(currentEvent ? currentEvent?.status : 'new');
 
 
 
@@ -70,9 +69,12 @@ export default function EventModal({
                     <Form.Group className="mb-3" controlId="orderSelect">
                         <Form.Label>Zakázka</Form.Label>
                         <Form.Select
-                            value={orderId}
-                            onChange={(e) => setOrderId(e.target.value)}
+                            value={parentId}
+                            onChange={(e) => setParentId(e.target.value)}
                         >
+                            <option key='' value='none'>
+                                Nic
+                            </option>
                             {events.map((o) => (
                                 <option key={o.id} value={o.id}>
                                     {o.title}
@@ -127,7 +129,7 @@ export default function EventModal({
                 </Button>
                 <Button
                     variant="primary"
-                    onClick={() => onSave(orderId, orderName, orderCode, start, end, status)}
+                    onClick={() => onSave(parentId, orderName, orderCode, start, end, status)}
                 >
                     Uložit
                 </Button>
