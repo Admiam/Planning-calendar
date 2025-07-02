@@ -1,13 +1,15 @@
 // src/components/EventModal.tsx
 import { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import type { SlotInfo } from 'react-big-calendar';
+// import type { SlotInfo } from 'react-big-calendar';
 import type { Event } from '../store/useStore';
 import { parse } from 'date-fns';
 import {formatHourOnly} from "../utils/date.ts";
 
 interface Props {
-    slotInfo: SlotInfo;
+    // slotInfo: SlotInfo;
+    initialStart: Date;
+    initialEnd:   Date;
     events: Event[];
     currentEvent: Event | null;
     onSave: (
@@ -23,7 +25,8 @@ interface Props {
 }
 
 export default function EventModal({
-                                       slotInfo,
+                                       initialStart,
+                                       initialEnd,
                                        events,
                                        currentEvent,
                                        onSave,
@@ -32,8 +35,8 @@ export default function EventModal({
     const [parentId, setParentId] = useState<string>(currentEvent ? currentEvent?.parentId : 'none');
     const [orderName, setOrderName] = useState<string>(currentEvent ? currentEvent?.title : '');
     const [orderCode, setOrderCode] = useState<string>(currentEvent ? currentEvent?.code : '');
-    const [start, setStart] = useState<Date>(slotInfo.start);
-    const [end, setEnd] = useState<Date>(slotInfo.end);
+    const [start, setStart] = useState<Date>(initialStart);
+    const [end, setEnd] = useState<Date>(initialEnd);
     const [status, setStatus] = useState<'new' | 'in-prep' | 'done'>(currentEvent ? currentEvent?.status : 'new');
 
 
