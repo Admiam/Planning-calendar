@@ -1,6 +1,7 @@
 import './App.css'
 import { useState } from 'react';
-import {type Event as AppEvent, useSchedulerStore} from './store/useStore';
+import {useSchedulerStore} from './store/useStore';
+import type {Event} from './types.ts';
 import EventModal from "./components/EventModal.tsx";
 import {floorDateToIncrement} from "./utils/date.ts";
 import CalendarComponent from "./components/Calendar";
@@ -28,7 +29,7 @@ function App() {
         orderCode: string,
         start: Date,
         end: Date,
-        status: AppEvent['status']
+        status: Event['status']
     ) => {
         addEvent(parentId, orderName, orderCode, start, end, status);
         setModalOpen(false);
@@ -36,15 +37,15 @@ function App() {
 
   return (
       <div>
-         ` <button className="btn btn-outline-primary me-2 position-absolute mt-2 z-3"
+         <button className="btn btn-outline-primary me-2 mt-2 z-3"
                   type="button"
                   onClick={() => {
                       setModalOpen(true)
                       setSlotRange(createDefaultSlot());
                   }}>
               Vložit zakázku
-          </button>`
-          <main>
+          </button>
+          <main className="w-100 h-100">
               <CalendarComponent/>
           </main>
           {modalOpen && slotRange && (

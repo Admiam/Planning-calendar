@@ -1,15 +1,6 @@
 import {create} from 'zustand';
 import { v4 as uuid } from 'uuid';
-
-export interface Event {
-    id: string;
-    parentId: string;
-    title: string;
-    code: string;
-    start: Date;
-    end: Date;
-    status: 'new' | 'in-prep' | 'done';
-}
+import type {Event} from '../types.ts';
 
 interface SchedulerState {
     events: Event[];

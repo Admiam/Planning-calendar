@@ -1,14 +1,14 @@
 import { Modal, Button, ListGroup } from 'react-bootstrap';
-import type { Event as AppEvent } from '../store/useStore';
+import type {Event} from '../types.ts';
 import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
 
 interface ConfirmationModalProps {
     show: boolean;
-    toDelete: AppEvent | null;
+    toDelete: Event | null;
     onHide: () => void;
     onConfirm: () => void;
-    badgeName: (status: AppEvent['status']) => string;
+    badgeName: (status: Event['status']) => string;
 }
 
 export default function ConfirmationModal({
