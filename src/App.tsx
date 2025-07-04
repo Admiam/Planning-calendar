@@ -4,7 +4,7 @@ import {useSchedulerStore} from './store/useStore';
 import type {Event} from './types.ts';
 import EventModal from "./components/EventModal.tsx";
 import {floorDateToIncrement} from "./utils/date.ts";
-import CalendarComponent from "./components/Calendar";
+import Calendar from "./components/Calendar";
 
 function App() {
     const [modalOpen, setModalOpen] = useState(false);
@@ -46,7 +46,7 @@ function App() {
               Vložit zakázku
           </button>
           <main className="w-100 h-100">
-              <CalendarComponent/>
+              <Calendar/>
           </main>
           {modalOpen && slotRange && (
               <EventModal

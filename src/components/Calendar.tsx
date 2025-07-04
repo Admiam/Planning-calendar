@@ -5,10 +5,10 @@ import EventModal from "./EventModal.tsx";
 import {useSchedulerStore} from "../store/useStore.ts";
 import type {Event} from "../types.ts";
 import 'gridstack/dist/gridstack.min.css';
-import CalendarGrid from "./CalendarGrid.tsx";
 import {statusColor} from "../constants.ts";
+import CalendarComponent from "./gridstack/CalendarComponent.tsx";
 
-export default function CalendarComponent() {
+export default function Calendar() {
     const [range, setRange] = useState({startDate: new Date(), endDate: new Date()});
     const [slotRange, setSlotRange] = useState<{ start: Date; end: Date } | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
@@ -38,7 +38,7 @@ export default function CalendarComponent() {
 
     return (
         <div>
-            <CalendarGrid year={2025} month={7} events={gridEvents} />;
+            <CalendarComponent year={2025} month={7} events={gridEvents} />;
 
             {modalOpen && slotRange && (
                 <EventModal

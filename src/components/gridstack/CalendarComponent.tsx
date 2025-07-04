@@ -2,16 +2,13 @@ import React from 'react';
 import type { GridStackOptions, GridStackWidget } from 'gridstack';
 import {
     type ComponentDataType,
-    type ComponentMap,
     GridStackProvider,
-    GridStackRender,
-    GridStackRenderProvider, useGridStackContext,
-} from '../lib';
+} from '../../lib';
+import {CZECH_DAYS} from "../../constants.ts";
+import type {CalendarComponentProps} from "../../types.ts";
+import CalendarGrid from "./CalendarGrid.tsx";
 import 'gridstack/dist/gridstack.min.css';
-import './gridstack/style.css';
-import {CZECH_DAYS} from "../constants.ts";
-import type {CalendarComponentProps} from "../types.ts";
-
+import './style.css';
 
 function Text({ content, bgColor }: { content: string, bgColor: string }) {
     return <div className="w-full h-full d-flex align-items-center p-1 rounded-2 text-light"
@@ -27,9 +24,6 @@ function Text({ content, bgColor }: { content: string, bgColor: string }) {
         </div>
     </div>;
 }
-const COMPONENT_MAP: ComponentMap = { Text };
-
-
 
 const CalendarComponent: React.FC<CalendarComponentProps> = ({ year, month, events }) => {
     // calculate days
@@ -77,19 +71,7 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({ year, month, even
                     );
                 })}
             </div>
-            {/*<div*/}
-            {/*    className="grid-stack calendar-grid"*/}
-            {/*    style={{ '--cols': daysInMonth, '--row-height': '60px' } as React.CSSProperties}*/}
-            {/*    // onClick={handleGridClick}*/}
-
-            {/*>*/}
-            {/*    <GridStackRenderProvider>*/}
-            {/*        <GridStackRender componentMap={COMPONENT_MAP} />*/}
-            {/*    </GridStackRenderProvider>*/}
-            {/*</div>*/}
             <CalendarGrid daysInMonth={daysInMonth} year={year} month={month} />
-
-
         </GridStackProvider>
     );
 };
