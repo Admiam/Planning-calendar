@@ -1,4 +1,4 @@
-# RTsoft Scheduler
+# Timeline Calendar
 
 A lightweight React + TypeScript app for managing and scheduling orders.
 
@@ -16,8 +16,6 @@ A lightweight React + TypeScript app for managing and scheduling orders.
    ```bash
    npm run build
    ```
-
-App will be available at `http://localhost:5173`.
 
 ## ⚙️ Available Scripts
 
