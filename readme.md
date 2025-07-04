@@ -34,21 +34,3 @@ src/
 └─ main.tsx         # Entrypoint (Bootstrap CSS import)
 ```
 
-## ✨ Features
-
-- Click calendar slots to **add/edit** events
-- **Drag-and-drop** and selectable week/day/month views
-- Color-coded by status: **new**, **in-prep**, **done**
-- Sidebar: **collapsible** tree of events
-- **Confirm before deletion** modal
-
-## 📌 Customize
-
-- Change colors in `eventPropGetter` (Calendar) or badge helpers (EventCards).
-- Adjust date formats in `date-fns` calls.
-- Extend store (e.g. add persistence).
-
----
-
-Happy scheduling!
-
