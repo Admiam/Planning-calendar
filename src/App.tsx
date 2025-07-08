@@ -4,7 +4,7 @@ import {useSchedulerStore} from './store/useStore';
 import type {Event} from './types.ts';
 import EventModal from "./components/EventModal.tsx";
 import {floorDateToIncrement} from "./utils/date.ts";
-import Calendar from "./components/Calendar";
+import Calendar from "./components/calendar/Calendar.tsx";
 
 function App() {
     const [modalOpen, setModalOpen] = useState(false);

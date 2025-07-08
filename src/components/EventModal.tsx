@@ -2,9 +2,9 @@
 import { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 // import type { SlotInfo } from 'react-big-calendar';
-import type { Event } from '../store/useStore';
 import { parse } from 'date-fns';
 import {formatHourOnly} from "../utils/date.ts";
+import type { Event } from '../types.ts';
 
 interface Props {
     // slotInfo: SlotInfo;

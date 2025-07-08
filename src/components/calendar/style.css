@@ -1,9 +1,13 @@
 .grid-stack {
-    background: #FAFAD2;
+    background: #ffffff;
+
 }
 
 .grid-stack-item-content {
     text-align: center;
+    z-index: 100;
+
+
 }
 
 .grid-stack-item-removing {
@@ -33,4 +37,9 @@
 
 .h-full {
     height: 100%;
+}
+
+
+.calendar-header > div {
+    box-shadow: inset 1px 0 0 #ccc;
 }
