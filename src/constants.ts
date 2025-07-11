@@ -9,3 +9,5 @@ export const statusColor: Record<Event["status"], string> = {
     "in-prep":"#0275d8",
     done:    "#5cb85c",
 };
+
+export const cellHeight = 60;
